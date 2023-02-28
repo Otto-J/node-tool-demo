@@ -1,0 +1,5 @@
+# 常见的 gitignore
+node_modules
+
+# mac 的 .ds
+.DS_Store
