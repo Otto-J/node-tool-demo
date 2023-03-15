@@ -38,3 +38,480 @@ model User2 {
   email String  @unique(map: "User_email_key")
   name  String?
 }
+
+model dict_data {
+  id             BigInt   @id @default(autoincrement())
+  node_id        Int
+  property_name  String   @db.VarChar(128)
+  property_key   String   @db.VarChar(128)
+  property_value String   @db.VarChar(128)
+  property_type  String   @db.VarChar(128)
+  ordinal        Int
+  create_time    DateTime @default(now()) @db.DateTime(0)
+  create_user    String?  @db.VarChar(32)
+  update_time    DateTime @default(now()) @db.DateTime(0)
+  update_user    String?  @db.VarChar(32)
+  deleted        Int?     @default(0)
+}
+
+model dict_entry {
+  id          BigInt   @id @default(autoincrement())
+  tenant_id   Int      @default(1)
+  type_key    String   @default("") @db.VarChar(32)
+  type_name   String   @default("") @db.VarChar(32)
+  parent_key  String   @default("0") @db.VarChar(32)
+  entry_key   String   @default("") @db.VarChar(32)
+  entry_name  String   @default("") @db.VarChar(32)
+  path        String   @default("") @db.VarChar(128)
+  seq         Int      @default(0) @db.MediumInt
+  remark      String   @default("") @db.VarChar(64)
+  deleted     Boolean  @default(false)
+  update_user String?  @default("修改人") @db.VarChar(32)
+  update_time DateTime @default(now()) @db.DateTime(0)
+  create_user String?  @default("创建人") @db.VarChar(32)
+  create_time DateTime @default(now()) @db.DateTime(0)
+
+  @@unique([tenant_id, entry_key], map: "ux_entry_key")
+  @@index([tenant_id, parent_key], map: "idx_parent_key")
+  @@index([tenant_id, type_key, seq], map: "idx_type_key")
+}
+
+model dict_node {
+  id          BigInt   @id @default(autoincrement())
+  tenant_id   Int
+  node_name   String   @db.VarChar(128)
+  node_key    String   @db.VarChar(128)
+  node_type   Int
+  status      Int      @default(0)
+  parent_id   Int
+  parent_path String   @db.VarChar(128)
+  system_key  String   @db.VarChar(64)
+  ordinal     Int
+  remark      String?  @db.VarChar(512)
+  create_time DateTime @default(now()) @db.DateTime(0)
+  create_user String?  @db.VarChar(32)
+  update_time DateTime @default(now()) @db.DateTime(0)
+  update_user String?  @db.VarChar(32)
+  deleted     Int?     @default(0)
+}
+
+model exp_feedback {
+  id                  BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  deleted             Int       @default(0) @db.UnsignedTinyInt
+  create_time         DateTime  @default(now()) @db.DateTime(0)
+  create_user         String    @default("") @db.VarChar(32)
+  update_time         DateTime  @default(now()) @db.DateTime(0)
+  update_user         String    @default("") @db.VarChar(32)
+  tenant_id           BigInt?
+  satisfaction        String?   @db.VarChar(64)
+  product_name        String?   @db.VarChar(256)
+  content             String?   @db.VarChar(2048)
+  user                String?   @db.VarChar(64)
+  contact_information String?   @db.VarChar(256)
+  submit_time         DateTime? @default(now()) @db.DateTime(0)
+}
+
+model t_data_resource {
+  id                    BigInt    @id @default(autoincrement())
+  tenant_id             Int       @default(0)
+  system_code           String    @default("common") @db.VarChar(16)
+  system_name           String    @default("通用平台") @db.VarChar(32)
+  module_code           String    @default("common") @db.VarChar(16)
+  module_name           String    @default("通用模块") @db.VarChar(32)
+  parent_code           String    @default("") @db.VarChar(32)
+  parent_id             BigInt    @default(0)
+  resource_code         String    @default("") @db.VarChar(32)
+  resource_name         String    @default("") @db.VarChar(32)
+  resource_type_code    String    @default("data") @db.VarChar(16)
+  resource_type_name    String    @default("数据类型") @db.VarChar(16)
+  resource_subtype_code String    @default("") @db.VarChar(32)
+  resource_subtype_name String    @default("") @db.VarChar(32)
+  seq                   Int       @default(0)
+  remark                String    @default("") @db.VarChar(64)
+  deleted               Boolean   @default(false)
+  update_user           String?   @default("修改人") @db.VarChar(16)
+  update_time           DateTime? @default(now()) @db.DateTime(0)
+  create_user           String?   @default("创建人") @db.VarChar(16)
+  create_time           DateTime? @default(now()) @db.DateTime(0)
+
+  @@index([tenant_id, parent_id], map: "IDX_t_data_resource_parent_id")
+  @@index([tenant_id, resource_code], map: "IDX_t_data_resource_res_code")
+  @@index([tenant_id, resource_subtype_code], map: "IDX_t_data_resource_res_type")
+}
+
+model t_data_resource_copy {
+  id                    BigInt    @id @default(autoincrement())
+  tenant_id             Int       @default(0)
+  hasChildren           Boolean   @default(false)
+  system_code           String    @default("common") @db.VarChar(16)
+  system_name           String    @default("通用平台") @db.VarChar(32)
+  module_code           String    @default("common") @db.VarChar(16)
+  module_name           String    @default("通用模块") @db.VarChar(32)
+  parent_code           String    @default("") @db.VarChar(32)
+  parent_id             BigInt    @default(0)
+  resource_code         String    @default("") @db.VarChar(32)
+  resource_name         String    @default("") @db.VarChar(32)
+  resource_type_code    String    @default("data") @db.VarChar(16)
+  resource_type_name    String    @default("数据类型") @db.VarChar(16)
+  resource_subtype_code String    @default("") @db.VarChar(32)
+  resource_subtype_name String    @default("") @db.VarChar(32)
+  seq                   Int       @default(0)
+  remark                String    @default("") @db.VarChar(64)
+  deleted               Boolean   @default(false)
+  update_user           String?   @default("修改人") @db.VarChar(16)
+  update_time           DateTime? @default(now()) @db.DateTime(0)
+  create_user           String?   @default("创建人") @db.VarChar(16)
+  create_time           DateTime? @default(now()) @db.DateTime(0)
+
+  @@index([tenant_id, parent_id], map: "IDX_t_data_resource_parent_id")
+  @@index([tenant_id, resource_code], map: "IDX_t_data_resource_res_code")
+  @@index([tenant_id, resource_subtype_code], map: "IDX_t_data_resource_res_type")
+}
+
+model t_organization {
+  id                 BigInt   @id @default(autoincrement())
+  tenant_id          Int      @default(0)
+  org_code           String   @default("") @db.VarChar(32)
+  org_name           String   @default("") @db.VarChar(32)
+  org_leader_account String   @default("") @db.VarChar(32)
+  org_leader_name    String   @default("") @db.VarChar(32)
+  parent_code        String   @default("") @db.VarChar(32)
+  remark             String   @default("") @db.VarChar(64)
+  seq                Int      @default(0)
+  deleted            Boolean  @default(false)
+  update_user        String   @default("修改人") @db.VarChar(16)
+  update_time        DateTime @default(now()) @db.DateTime(0)
+  create_user        String   @default("创建人") @db.VarChar(16)
+  create_time        DateTime @default(now()) @db.DateTime(0)
+
+  @@unique([tenant_id, org_code], map: "UK_t_organization_org_code")
+  @@index([tenant_id, parent_code], map: "IDX_t_organization_parent_code")
+}
+
+model t_organization_type {
+  id          BigInt   @id @default(autoincrement())
+  tenant_id   Int      @default(0)
+  type_code   String   @default("") @db.VarChar(32)
+  type_name   String   @default("") @db.VarChar(32)
+  remark      String   @default("") @db.VarChar(64)
+  deleted     Boolean  @default(false)
+  update_user String   @default("修改人") @db.VarChar(16)
+  update_time DateTime @default(now()) @db.DateTime(0)
+  create_user String   @default("创建人") @db.VarChar(16)
+  create_time DateTime @default(now()) @db.DateTime(0)
+
+  @@unique([tenant_id, type_code], map: "UK_t_organization_type_ode")
+}
+
+model t_organization_users {
+  id           BigInt   @id @default(autoincrement())
+  tenant_id    Int      @default(0)
+  org_code     String   @default("") @db.VarChar(32)
+  user_account String?  @db.VarChar(384)
+  deleted      Boolean  @default(false)
+  update_user  String   @default("修改人") @db.VarChar(16)
+  update_time  DateTime @default(now()) @db.DateTime(0)
+  create_user  String   @default("创建人") @db.VarChar(16)
+  create_time  DateTime @default(now()) @db.DateTime(0)
+
+  @@unique([tenant_id, org_code, user_account], map: "UK_t_org_users_account")
+}
+
+model t_permission {
+  id             BigInt   @id @default(autoincrement())
+  tenant_id      Int      @default(0)
+  auth_code      String?  @db.VarChar(384)
+  auth_name      String?  @db.VarChar(384)
+  auth_type_code String   @default("") @db.VarChar(32)
+  auth_type_name String   @default("") @db.VarChar(32)
+  remark         String   @default("") @db.VarChar(64)
+  deleted        Boolean  @default(false)
+  update_user    String   @default("修改人") @db.VarChar(16)
+  update_time    DateTime @default(now()) @db.DateTime(0)
+  create_user    String   @default("创建人") @db.VarChar(16)
+  create_time    DateTime @default(now()) @db.DateTime(0)
+
+  @@unique([tenant_id, auth_name], map: "unique_code")
+}
+
+model t_permission_resources {
+  id             BigInt   @id @default(autoincrement())
+  tenant_id      Int      @default(0)
+  auth_type_code String   @default("function") @db.VarChar(32)
+  auth_id        BigInt   @default(0)
+  resource_id    BigInt   @default(0)
+  deleted        Boolean  @default(false)
+  update_user    String   @default("修改人") @db.VarChar(16)
+  update_time    DateTime @default(now()) @db.DateTime(0)
+  create_user    String   @default("创建人") @db.VarChar(16)
+  create_time    DateTime @default(now()) @db.DateTime(0)
+
+  @@unique([tenant_id, auth_id, resource_id], map: "auth_resources")
+  @@index([auth_id, resource_id], map: "IDX_AUTHID_RESOURCEID")
+}
+
+model t_position {
+  id          BigInt   @id @default(autoincrement())
+  tenant_id   Int      @default(0)
+  post_code   String   @default("") @db.VarChar(32)
+  post_name   String   @default("") @db.VarChar(32)
+  type_code   String   @default("") @db.VarChar(32)
+  type_name   String   @default("") @db.VarChar(32)
+  remark      String   @default("") @db.VarChar(64)
+  deleted     Boolean  @default(false)
+  update_user String   @default("修改人") @db.VarChar(16)
+  update_time DateTime @default(now()) @db.DateTime(0)
+  create_user String   @default("创建人") @db.VarChar(16)
+  create_time DateTime @default(now()) @db.DateTime(0)
+
+  @@unique([tenant_id, post_code], map: "UK_t_position_code")
+}
+
+model t_resource {
+  id                    BigInt   @id @default(autoincrement())
+  tenant_id             Int      @default(0)
+  system_code           String   @default("") @db.VarChar(16)
+  system_name           String   @default("") @db.VarChar(32)
+  module_code           String   @default("") @db.VarChar(32)
+  module_name           String   @default("") @db.VarChar(32)
+  parent_code           String   @default("") @db.VarChar(32)
+  resource_code         String   @default("") @db.VarChar(32)
+  resource_name         String   @default("") @db.VarChar(32)
+  resource_path         String   @default("") @db.VarChar(640)
+  resource_link         String   @default("") @db.VarChar(64)
+  resource_type_code    String   @default("") @db.VarChar(32)
+  resource_type_name    String   @default("") @db.VarChar(32)
+  resource_subtype_code String   @default("") @db.VarChar(32)
+  resource_subtype_name String   @default("") @db.VarChar(32)
+  resource_icon         String   @default("") @db.VarChar(32)
+  display               Boolean  @default(true)
+  seq                   Int      @default(0)
+  remark                String   @default("") @db.VarChar(64)
+  deleted               Boolean  @default(false)
+  update_user           String   @default("修改人") @db.VarChar(16)
+  update_time           DateTime @default(now()) @db.DateTime(0)
+  create_user           String   @default("创建人") @db.VarChar(16)
+  create_time           DateTime @default(now()) @db.DateTime(0)
+
+  @@unique([tenant_id, system_code, module_code, resource_code, deleted], map: "UK_t_resource_sys_mod_res_code")
+  @@index([tenant_id, system_code], map: "IDX_t_resource_sys_code")
+  @@index([tenant_id, system_code, module_code], map: "IDX_t_resource_sys_mod_code")
+  @@index([tenant_id, system_code, parent_code], map: "IDX_t_resource_sys_parent")
+}
+
+model t_role {
+  id             BigInt   @id @default(autoincrement())
+  tenant_id      Int      @default(0)
+  role_code      String?  @db.VarChar(384)
+  role_name      String?  @db.VarChar(384)
+  role_type_code String   @default("") @db.VarChar(32)
+  role_type_name String   @default("") @db.VarChar(32)
+  parent_code    String   @default("") @db.VarChar(32)
+  remark         String   @default("") @db.VarChar(64)
+  deleted        Boolean  @default(false)
+  update_user    String   @default("修改人") @db.VarChar(16)
+  update_time    DateTime @default(now()) @db.DateTime(0)
+  create_user    String   @default("创建人") @db.VarChar(16)
+  create_time    DateTime @default(now()) @db.DateTime(0)
+
+  @@unique([tenant_id, role_code], map: "UK_t_role_code")
+  @@index([tenant_id, role_type_code], map: "IDX_t_role_type_code")
+}
+
+model t_role_org {
+  id          BigInt   @id @default(autoincrement())
+  tenant_id   Int      @default(0)
+  role_code   String?  @db.VarChar(384)
+  org_code    String   @default("") @db.VarChar(32)
+  deleted     Boolean  @default(false)
+  update_user String   @default("修改人") @db.VarChar(16)
+  update_time DateTime @default(now()) @db.DateTime(0)
+  create_user String   @default("创建人") @db.VarChar(16)
+  create_time DateTime @default(now()) @db.DateTime(0)
+
+  @@unique([tenant_id, role_code, org_code], map: "UK_role_org_code")
+}
+
+model t_role_permissions {
+  id          BigInt   @id @default(autoincrement())
+  tenant_id   Int      @default(0)
+  role_code   String?  @db.VarChar(384)
+  auth_id     BigInt   @default(0)
+  deleted     Boolean  @default(false)
+  update_user String   @default("修改人") @db.VarChar(16)
+  update_time DateTime @default(now()) @db.DateTime(0)
+  create_user String   @default("创建人") @db.VarChar(16)
+  create_time DateTime @default(now()) @db.DateTime(0)
+
+  @@unique([tenant_id, role_code, auth_id], map: "UK_t_role_permissions_role")
+}
+
+model t_role_users {
+  id           BigInt   @id @default(autoincrement())
+  tenant_id    Int      @default(0)
+  role_code    String?  @db.VarChar(384)
+  user_account String?  @db.VarChar(384)
+  add_type     Boolean  @default(true)
+  deleted      Boolean  @default(false)
+  update_user  String   @default("修改人") @db.VarChar(16)
+  update_time  DateTime @default(now()) @db.DateTime(0)
+  create_user  String   @default("创建人") @db.VarChar(16)
+  create_time  DateTime @default(now()) @db.DateTime(0)
+
+  @@unique([tenant_id, role_code, user_account, add_type], map: "UK_t_role_users_account")
+  @@index([tenant_id, user_account], map: "IDX_t_role_user_account_tenant_id")
+  @@index([tenant_id, role_code, user_account], map: "IDX_t_role_users_account")
+}
+
+model t_system_config {
+  id           BigInt   @id @default(autoincrement())
+  tenant_id    Int      @default(0)
+  group_key    String   @default("") @db.VarChar(32)
+  group_name   String   @default("") @db.VarChar(32)
+  config_key   String   @default("") @db.VarChar(32)
+  config_name  String   @default("") @db.VarChar(32)
+  config_value String   @default("") @db.VarChar(1000)
+  remark       String   @default("") @db.VarChar(64)
+  seq          Int      @default(0) @db.MediumInt
+  deleted      Boolean  @default(false)
+  update_user  String   @default("修改人") @db.VarChar(16)
+  update_time  DateTime @default(now()) @db.DateTime(0)
+  create_user  String   @default("创建人") @db.VarChar(16)
+  create_time  DateTime @default(now()) @db.DateTime(0)
+
+  @@unique([tenant_id, config_key], map: "UK_t_system_config_key")
+}
+
+model t_tenant {
+  id                  BigInt   @id @default(autoincrement())
+  tenant_id           Int      @unique(map: "UK_t_tenant_id") @default(0)
+  tenant_code         String   @default("") @db.VarChar(20)
+  tenant_name         String   @default("") @db.VarChar(32)
+  tenant_type_code    String   @default("") @db.VarChar(32)
+  tenant_type_name    String   @default("") @db.VarChar(32)
+  deploy_mode         String   @default("LOCAL") @db.VarChar(10)
+  deploy_mode_name    String   @default("本地模式") @db.VarChar(10)
+  auth_mode           String   @default("UMS") @db.VarChar(10)
+  auth_mode_name      String   @default("ums认证") @db.VarChar(10)
+  tax_id              String   @default("") @db.VarChar(32)
+  legal_person        String   @default("") @db.VarChar(32)
+  contact_phone       String   @default("") @db.VarChar(25)
+  contact_address     String   @default("") @db.VarChar(128)
+  contract_life_start DateTime @default(dbgenerated("'2021-09-01 00:00:00'")) @db.DateTime(0)
+  contract_life_end   DateTime @default(dbgenerated("'2022-09-01 00:00:00'")) @db.DateTime(0)
+  remark              String   @default("") @db.VarChar(64)
+  deleted             Boolean  @default(false)
+  update_user         String   @default("修改人") @db.VarChar(16)
+  update_time         DateTime @default(now()) @db.DateTime(0)
+  create_user         String   @default("创建人") @db.VarChar(16)
+  create_time         DateTime @default(now()) @db.DateTime(0)
+}
+
+model t_ulog {
+  id           BigInt   @id @default(autoincrement())
+  tenant_id    Int      @default(0)
+  user_id      Int      @default(0)
+  user_account String?  @db.VarChar(384)
+  user_name    String   @default("") @db.VarChar(16)
+  type         String   @default("") @db.VarChar(16)
+  remark       String   @default("") @db.VarChar(255)
+  client_ip    String   @default("") @db.VarChar(16)
+  module_name  String   @default("") @db.VarChar(16)
+  deleted      Boolean  @default(false)
+  update_user  String   @default("修改人") @db.VarChar(16)
+  update_time  DateTime @default(now()) @db.DateTime(0)
+  create_user  String   @default("创建人") @db.VarChar(16)
+  create_time  DateTime @default(now()) @db.DateTime(0)
+
+  @@index([tenant_id, user_account], map: "IDX_t_ulog_account")
+}
+
+model t_user {
+  id            BigInt    @id @default(autoincrement())
+  tenant_id     Int       @default(0)
+  user_id       Int       @default(0)
+  user_name     String    @default("") @db.VarChar(16)
+  user_sex      String    @default("男") @db.Char(2)
+  user_account  String?   @db.VarChar(384)
+  user_password String    @default("") @db.VarChar(32)
+  company_code  String    @default("") @db.VarChar(32)
+  company_name  String    @default("") @db.VarChar(32)
+  org_code      String    @default("") @db.VarChar(32)
+  org_name      String    @default("") @db.VarChar(32)
+  org_code_path String    @default("") @db.VarChar(255)
+  org_name_path String    @default("") @db.VarChar(255)
+  post_code     String    @default("") @db.VarChar(32)
+  post_name     String    @default("") @db.VarChar(32)
+  email         String    @default("") @db.VarChar(32)
+  tel           String    @default("") @db.VarChar(11)
+  qw_open_id    String    @default("") @db.VarChar(64)
+  wx_open_id    String    @default("") @db.VarChar(64)
+  dd_open_id    String    @default("") @db.VarChar(64)
+  icon          String    @default("") @db.VarChar(255)
+  login_status  Boolean   @default(false)
+  login_times   Int       @default(0)
+  remark        String    @default("") @db.VarChar(64)
+  deleted       Boolean   @default(false)
+  update_user   String    @default("修改人") @db.VarChar(16)
+  update_time   DateTime  @default(now()) @db.DateTime(0)
+  create_user   String    @default("创建人") @db.VarChar(16)
+  create_time   DateTime  @default(now()) @db.DateTime(0)
+  work_id       String?   @default("") @db.VarChar(16)
+  closing_date  DateTime? @db.DateTime(0)
+  wx_union_id   String?   @db.VarChar(64)
+
+  @@unique([tenant_id, user_account], map: "UK_t_user_tenant_account")
+  @@index([user_account, user_password], map: "IDX_t_user_account_pwd")
+  @@index([tel], map: "IDX_t_user_tel")
+  @@index([wx_open_id], map: "IDX_t_user_wx_open_id")
+}
+
+model t_user_group {
+  id          BigInt   @id @default(autoincrement())
+  tenant_id   Int      @default(0)
+  group_code  String   @default("") @db.VarChar(32)
+  group_name  String   @default("") @db.VarChar(32)
+  remark      String   @default("") @db.VarChar(64)
+  deleted     Boolean  @default(false)
+  update_user String   @default("修改人") @db.VarChar(16)
+  update_time DateTime @default(now()) @db.DateTime(0)
+  create_user String   @default("创建人") @db.VarChar(16)
+  create_time DateTime @default(now()) @db.DateTime(0)
+
+  @@unique([tenant_id, group_code], map: "UK_t_user_group")
+}
+
+model t_user_group_detail {
+  id           BigInt   @id @default(autoincrement())
+  tenant_id    Int      @default(0)
+  group_code   String   @default("") @db.VarChar(32)
+  group_name   String   @default("") @db.VarChar(32)
+  user_account String   @default("") @db.VarChar(32)
+  user_name    String   @default("") @db.VarChar(16)
+  deleted      Boolean  @default(false)
+  update_user  String   @default("修改人") @db.VarChar(16)
+  update_time  DateTime @default(now()) @db.DateTime(0)
+  create_user  String   @default("创建人") @db.VarChar(16)
+  create_time  DateTime @default(now()) @db.DateTime(0)
+
+  @@unique([tenant_id, group_code, user_account], map: "UK_t_group_user")
+}
+
+model t_user_pwd {
+  id             BigInt   @id @default(autoincrement())
+  tenant_id      Int      @default(0)
+  user_account   String?  @db.VarChar(384)
+  user_password  String   @default("") @db.VarChar(32)
+  user_pwd_mode1 String?  @db.VarChar(512)
+  user_pwd_mode2 String   @default("") @db.VarChar(64)
+  user_pwd_mode3 String   @default("") @db.VarChar(64)
+  remark         String   @default("") @db.VarChar(64)
+  deleted        Boolean  @default(false)
+  update_user    String   @default("修改人") @db.VarChar(16)
+  update_time    DateTime @default(now()) @db.DateTime(0)
+  create_user    String   @default("创建人") @db.VarChar(16)
+  create_time    DateTime @default(now()) @db.DateTime(0)
+
+  @@unique([tenant_id, user_account], map: "UK_t_user_tenant_account")
+  @@index([tenant_id, user_account, user_password], map: "IDX_t_user_account_pwd")
+}
