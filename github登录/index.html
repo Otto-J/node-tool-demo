@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>github login</title>
+  </head>
+  <body>
+    <button id="login">github 登录</button>
+
+    <script>
+      const clientId = "9e701a5e1d0e1ce29f4c";
+
+      const url = `https://github.com/login/oauth/authorize?scope=user:email&client_id=${clientId}`;
+      const login = document.querySelector("#login");
+      login.addEventListener("click", () => {
+        // const url = "";
+        console.log("clock");
+        location.href = url;
+      });
+    </script>
+  </body>
+</html>
